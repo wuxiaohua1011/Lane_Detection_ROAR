@@ -10,14 +10,20 @@ def generate_launch_description():
     base_path = os.path.realpath(get_package_share_directory("lane_detection_indy"))
     video_path = Path(base_path) / "configs" / "P6010001.MOV"
     assert video_path.exists(), f"[{video_path}] does not exist"
-    rviz_path = base_path + "/configs/example.rviz"
+    rviz_path = base_path + "/configs/lane_detection_2d_example.rviz"
     return LaunchDescription(
         [
-            launch_ros.actions.Node(
-                package="lane_detection_indy",
-                executable="road_mask_node",
-                name="road_mask_node",
-                parameters=[{"rgb_camera_topic": "/rgb_image", "debug": True}],
+            launch.actions.IncludeLaunchDescription(
+                launch.launch_description_sources.PythonLaunchDescriptionSource(
+                    os.path.join(
+                        get_package_share_directory("lane_detection_indy"),
+                        "lane_detection.launch.py",
+                    )
+                ),
+                launch_arguments={
+                    "debug": "true",
+                    "rgb_camera_topic": "/rgb_image",
+                }.items(),
             ),
             launch_ros.actions.Node(
                 package="lane_detection_indy",

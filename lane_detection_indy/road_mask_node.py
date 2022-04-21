@@ -29,9 +29,8 @@ class RoadMaskNode(Node):
         self.declare_parameter("debug", False)
         self.declare_parameter("ground_mask", [0, 0, 80, 255, 50, 200])
         self.declare_parameter("grass_mask", [43, 50, 20, 128, 255, 255])
-        self.declare_parameter(
-            "horizon_pct", 0.25
-        )  # horizon is at x percent of image height
+        # horizon is at horizon_pct percent of image height
+        self.declare_parameter("horizon_pct", 0.25)
         self.declare_parameter("morph_kernel_size", 30)
 
         self.morph_kernel_size = (
