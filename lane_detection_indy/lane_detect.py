@@ -9,6 +9,8 @@ from sensor_msgs.msg import Image
 
 GROUND_MASK_LOWER = np.array([0,0,80],dtype='uint8')
 GROUND_MASK_UPPER = np.array([255,50,200],dtype='uint8')
+# GROUND_MASK_LOWER = np.array([0,0,40],dtype='uint8')
+# GROUND_MASK_UPPER = np.array([180,30,200],dtype='uint8')
 GRASS_MASK_LOWER = np.array([43,50,20],dtype='uint8')
 GRASS_MASK_UPPER = np.array([128,255,255],dtype='uint8')
 
@@ -23,7 +25,7 @@ class LaneDetect(Node):
             reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
             durability=QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_VOLATILE,
             liveliness=QoSLivelinessPolicy.RMW_QOS_POLICY_LIVELINESS_AUTOMATIC,
-            depth=1,
+            depth=10,
         )
         self.img_sub = self.create_subscription(
             Image,
@@ -39,10 +41,13 @@ class LaneDetect(Node):
         # Converting ROS image message to RGB
         image = self.bridge.imgmsg_to_cv2(msg,desired_encoding='bgr8')
 
+        # height = image.shape[0]
+        # width = image.shape[1]
+        # image = image[height//4:height//2, :width]
+
         # use color of gound and grass to mask the road
         rg_detection_mask = self.road_and_grass_detection(image)
         rg_edge = self.edge_mask(rg_detection_mask)
-
         
         # Floodfill the road
         floodfill_mask = self.floodfill(image)
@@ -75,6 +80,7 @@ class LaneDetect(Node):
 
         # Choose bottom centre as starting point of floodfill
         seed = (height-1, width//2)
+        # print(seed, height, width)
         
         # Create a box around seed and get average
         box = (200, 200)
@@ -89,6 +95,9 @@ class LaneDetect(Node):
         # Change the seed to calculated mean
         img_hsv[seed[0], seed[1]] = mean
         
+        # print(img_hsv.shape, seed)
+
+        seed = (width//2, height-1)
         mask = np.zeros((img_hsv.shape[0] + 2, img_hsv.shape[1] + 2)).astype(np.uint8)
         cv2.floodFill(
             img_hsv,
@@ -116,7 +125,16 @@ class LaneDetect(Node):
         hsvImg = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         
         ground = cv2.inRange(hsvImg,GROUND_MASK_LOWER,GROUND_MASK_UPPER)
+        # cv2.imshow("Ground", ground)
+        # cv2.waitKey(1)
+
+        # groundd = cv2.dilate(ground,np.ones((10,10)))
+        # grounde = cv2.erode(ground,np.ones((21,21)))
+        # cv2.imshow("Grounde", grounde)
+        # cv2.waitKey(1)
         grass = cv2.inRange(hsvImg,GRASS_MASK_LOWER,GRASS_MASK_UPPER)
+        # cv2.imshow("Grass", grass)
+        # cv2.waitKey(1)
         
         grass = cv2.erode(grass,erokernel,iterations=2)
         ground = cv2.erode(ground,erokernel,iterations=2)

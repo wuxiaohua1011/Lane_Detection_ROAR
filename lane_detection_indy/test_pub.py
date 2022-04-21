@@ -23,7 +23,7 @@ class RGBStreamer(Node):
             reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
             durability=QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_VOLATILE,
             liveliness=QoSLivelinessPolicy.RMW_QOS_POLICY_LIVELINESS_AUTOMATIC,
-            depth=1,
+            depth=10,
         )
         self.rgb_image_pub = self.create_publisher(Image, "/rgb_image", qos_profile=qos_profile)
 
