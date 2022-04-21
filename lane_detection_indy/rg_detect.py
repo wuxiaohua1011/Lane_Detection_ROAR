@@ -31,7 +31,7 @@ class RGDetect(Node):
             reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
             durability=QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_VOLATILE,
             liveliness=QoSLivelinessPolicy.RMW_QOS_POLICY_LIVELINESS_AUTOMATIC,
-            depth=1,
+            depth=10,
         )
 
         self.img_sub = self.create_subscription(

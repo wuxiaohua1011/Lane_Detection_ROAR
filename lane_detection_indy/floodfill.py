@@ -18,7 +18,7 @@ class FloodFill(Node):
             reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
             durability=QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_VOLATILE,
             liveliness=QoSLivelinessPolicy.RMW_QOS_POLICY_LIVELINESS_AUTOMATIC,
-            depth=1,
+            depth=10,
         )
         self.img_sub = self.create_subscription(
             Image,
@@ -41,7 +41,9 @@ class FloodFill(Node):
         
         # Floodfill the road
         floodfill_mask = self.floodfill(image_hsv)
+        # remove noise
         floodfill_mask = cv2.morphologyEx(floodfill_mask, cv2.MORPH_CLOSE, np.ones((7,7)))
+        # find edge
         floodfill_edge = self.edge_mask(floodfill_mask)
 
         floodfill_edge_msg = self.bridge.cv2_to_imgmsg(floodfill_edge, encoding="mono8")
