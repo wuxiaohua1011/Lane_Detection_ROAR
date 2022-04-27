@@ -35,6 +35,8 @@ setup(
             "video_player_node = lane_detection_indy.video_player_node:main",
             "road_mask_node = lane_detection_indy.road_mask_node:main",
             "color_picker_node = lane_detection_indy.color_picker_node:main",
+            "data_recorder_node = lane_detection_indy.data_recorder_node:main",
+            "segformer_road_detector_node = lane_detection_indy.segformer_road_detector_node:main",
         ],
     },
 )
